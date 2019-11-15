@@ -1,1 +1,1 @@
-Open in Browser
+https://matuzalema.github.io/load-jpg-files/
