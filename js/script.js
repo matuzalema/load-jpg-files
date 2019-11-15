@@ -33,7 +33,7 @@ function handleFileSelect(event) {
         var name = event.target.files[i].name;
         reader.addEventListener("load", function () {
             if (this.result && localStorage) {
-                window.localStorage.clear();
+                // window.localStorage.clear();
                 window.localStorage.setItem(name, this.result);
             } else {
                 console('err');
