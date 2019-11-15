@@ -33,14 +33,14 @@ function handleFileSelect(event) {
         var name = event.target.files[i].name;
         reader.addEventListener("load", function () {
             if (this.result && localStorage) {
+                window.localStorage.clear();
                 window.localStorage.setItem(name, this.result);
             } else {
-                alert();
+                console('err');
             }
         });
-        reader.readAsDataURL(event.target.files[0]);
+        reader.readAsDataURL(event.target.files[i]);
     
-
         reader.onload = (function (theFile) {
             return function(e) {
                 imgSrc = e.target.result;
