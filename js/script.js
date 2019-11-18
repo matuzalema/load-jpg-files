@@ -1,68 +1,43 @@
-(function apiSupport(){
-    if(window.File && window.FileReader && window.FileList && window.Blob) {
-        console.log('success');
-    } else {
-        alert('error');
-    }
-})();
+var inputElement = document.getElementById('files');
+var fileData = document.getElementById('file-data');
+var imgList = document.getElementById('img-list');
 
-function getExif(image, gps, dataGeographical) {
-    EXIF.getData(image, function() {
-        var data = EXIF.getTag(this, gps);
-        li = document.createElement('li');
-        li.innerHTML = (dataGeographical + toDecimal(data));
-        document.querySelector('.list').insertAdjacentElement('afterbegin', li);
-    });
-}
+function handleFiles(event) {
+    var fileList = event.target.files;
 
-var toDecimal = function (number) {
-    return number[0].numerator + number[1].numerator / (60 * number[1].denominator) + number[2].numerator / (3600 * number[2].denominator);
-};
+    for(var i=0; i<fileList.length; i++){
+        var file = fileList[i];
+        var dataURL;
+        var longitude;
+        var latitude;
 
-function handleFileSelect(event) {
-    var files = event.target.files; 
-    var output = [];
-    
-    for (var i = 0; i<files.length; i++) {
-        var file = files[i];
-        var reader= new FileReader();
-        var imgSrc;
-        var span;
+        var toDecimal = function (number) {
+            return number[0].numerator + number[1].numerator / (60 * number[1].denominator) + number[2].numerator / (3600 * number[2].denominator);
+        };
 
-        // add to localStorage
-        var name = event.target.files[i].name;
-        reader.addEventListener("load", function () {
-            if (this.result && localStorage) {
-                // window.localStorage.clear();
-                window.localStorage.setItem(name, this.result);
-            } else {
-                console('err');
-            }
-        });
-        reader.readAsDataURL(event.target.files[i]);
-    
-        reader.onload = (function (theFile) {
-            return function(e) {
-                imgSrc = e.target.result;
-                li = document.createElement('li');
-                li.innerHTML = ['<img class="thumb" src="', imgSrc,
-                '" height="100"/>'].join('');
-                document.querySelector('.list').insertAdjacentElement('afterbegin', li);
-
-                getExif(file, 'GPSLongitude', 'longitude: ');
-                getExif(file, 'GPSLatitude', 'latitude: ');
-            }
-    })(file);
+        (function getExif(image) {
+            EXIF.getData(image, function () {
+                longitude = EXIF.getTag(this, 'GPSLongitude');
+                latitude = EXIF.getTag(this, 'GPSLatitude');
+            });
+        })(file);
         
-        output.push(
-            '<li> <strong> file name: </strong>' + file.name + 
-            '<li><strong>size:</strong>' + file.size + ' bytes <br />' + '</li>'
-        );
+        fileData.insertAdjacentHTML('afterbegin', '<ul id="img-list"></ul>');
+        var imgList = document.getElementById('img-list');
+        
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            dataURL = e.target.result;
+            imgList.insertAdjacentHTML('afterbegin', '<li class="img-data file-size"> longitude:' + longitude + ' </li>');
+            imgList.insertAdjacentHTML('afterbegin', '<li class="img-data file-size"> latitude:' + latitude + '</li>');
+            imgList.insertAdjacentHTML('afterbegin', '<li class="img-data file-size"> size: ' + file.size + ' bites </li>');
+            imgList.insertAdjacentHTML('afterbegin', '<li class="img-data file-name"> name: ' + file.name + '</li>');
+            imgList.insertAdjacentHTML('afterbegin', '<img width=100 src='+ dataURL+ '>'); 
+        };
+        reader.readAsDataURL(file);   
     }
-
-    document.getElementById('list').innerHTML = '<ul class="list">' + output.join("") + '</ul>';
 }
 
-document.getElementById('files').addEventListener('change', handleFileSelect);
+inputElement.addEventListener('change', handleFiles);
 
 
