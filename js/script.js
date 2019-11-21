@@ -70,11 +70,22 @@ function handleFiles(event) {
                 fileData.insertAdjacentHTML('afterbegin', '<ul id="img-list"></ul>');
 
                 const imgList = document.getElementById('img-list');
+                imgList.insertAdjacentHTML('afterbegin', '<button type=submit class="remove-btn">remove</button>');
                 imgList.insertAdjacentHTML('afterbegin', '<li class="img-data file-size"> latitudde: ' + stored.latitude + ' </li>');
                 imgList.insertAdjacentHTML('afterbegin', '<li class="img-data file-size"> longitude: ' + stored.longitude + ' </li>');
                 imgList.insertAdjacentHTML('afterbegin', '<li class="img-data file-size"> size: ' + stored.size + ' bites </li>');
                 imgList.insertAdjacentHTML('afterbegin', '<li class="img-data file-size"> name: ' + stored.name + '</li>');
                 imgList.insertAdjacentHTML('afterbegin', '<img width=100 src=' + stored.src  + '>');
+
+                const removeButtons = document.querySelectorAll('.remove-btn');
+                for(let i=0; i<removeButtons.length; i++){
+                    removeButtons[i].addEventListener('click', function(e){
+                        e.preventDefault();
+                        this.parentNode.remove();
+                        return;      
+                    });
+                    return;
+                }
             };
         })(file);
         reader.readAsDataURL(file);
